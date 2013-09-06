@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_javatesting" default="compile.module.javatesting">
+  <dirname property="module.javatesting.basedir" file="${ant.file.module_javatesting}"/>
+  
+  <property name="module.jdk.home.javatesting" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.javatesting" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.javatesting" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.javatesting" value="${compiler.args}"/>
+  
+  <property name="javatesting.output.dir" value="${module.javatesting.basedir}/out/production/JavaTesting"/>
+  <property name="javatesting.testoutput.dir" value="${module.javatesting.basedir}/out/test/JavaTesting"/>
+  
+  <path id="javatesting.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="javatesting.module.production.classpath">
+    <path refid="${module.jdk.classpath.javatesting}"/>
+    <path refid="library.derby.classpath"/>
+    <path refid="library.derbyclient.classpath"/>
+  </path>
+  
+  <path id="javatesting.runtime.production.module.classpath">
+    <pathelement location="${javatesting.output.dir}"/>
+    <path refid="library.derby.classpath"/>
+    <path refid="library.derbyclient.classpath"/>
+  </path>
+  
+  <path id="javatesting.module.classpath">
+    <path refid="${module.jdk.classpath.javatesting}"/>
+    <pathelement location="${javatesting.output.dir}"/>
+    <path refid="library.derby.classpath"/>
+    <path refid="library.derbyclient.classpath"/>
+  </path>
+  
+  <path id="javatesting.runtime.module.classpath">
+    <pathelement location="${javatesting.testoutput.dir}"/>
+    <pathelement location="${javatesting.output.dir}"/>
+    <path refid="library.derby.classpath"/>
+    <path refid="library.derbyclient.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.javatesting">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.javatesting">
+    <patternset refid="excluded.from.module.javatesting"/>
+  </patternset>
+  
+  <path id="javatesting.module.sourcepath">
+    <dirset dir="${module.javatesting.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.javatesting" depends="compile.module.javatesting.production,compile.module.javatesting.tests" description="Compile module JavaTesting"/>
+  
+  <target name="compile.module.javatesting.production" depends="register.custom.compilers" description="Compile module JavaTesting; production classes">
+    <mkdir dir="${javatesting.output.dir}"/>
+    <javac2 destdir="${javatesting.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.javatesting}/javac">
+      <compilerarg line="${compiler.args.javatesting}"/>
+      <bootclasspath refid="javatesting.module.bootclasspath"/>
+      <classpath refid="javatesting.module.production.classpath"/>
+      <src refid="javatesting.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.javatesting"/>
+    </javac2>
+    
+    <copy todir="${javatesting.output.dir}">
+      <fileset dir="${module.javatesting.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.javatesting.tests" depends="register.custom.compilers,compile.module.javatesting.production" description="compile module JavaTesting; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.javatesting" description="cleanup module">
+    <delete dir="${javatesting.output.dir}"/>
+    <delete dir="${javatesting.testoutput.dir}"/>
+  </target>
+</project>
